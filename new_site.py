@@ -88,7 +88,7 @@ class NewBranchScript(Script):
         router.save()
         self.log_success(f"Created new router: {router}")
         try:
-            self.log_success(f"Created new router: {router.name}")
+            self.log_success(f"Created new router: {router.model}")
         except:
             self.log_success("No bridge")
         try:
