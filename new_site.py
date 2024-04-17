@@ -87,6 +87,7 @@ class NewBranchScript(Script):
         )
         router.save()
         self.log_success(f"Created new router: {router}")
+        self.log_success(f"Created new router: {router.site()}")
 
         # Create access switches
         switch_role = DeviceRole.objects.get(name='Access Switch')
