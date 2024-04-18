@@ -46,8 +46,17 @@ class NewBranchScript(Script):
         description="Публичный IP-адрес",
         required=False
     )
+    public_interface = StringVar(
+        default="eth1",
+        description="Интерфейс для публичного адреса, прим. eth1. Необходимо указать, если прописан ip.",
+        required=False
+    )
     private_ip = IPAddressWithMaskVar(
         description="Приватный (внутренний) IP-адрес"
+    )
+    private_interface = StringVar(
+        default="bridge1",
+        description="Интерфейс для приватного адреса, прим. bridge1. Необходимо указать, если прописан ip."
     )
     manufacturer_switch = ObjectVar(
         model=Manufacturer,
@@ -79,26 +88,30 @@ class NewBranchScript(Script):
         self.log_success(f"Created new site: {site}")
 
         router_role = DeviceRole.objects.get(name='Router')
-        router = Device(
-            device_type=data[ 'router_model' ],
-            name=f'{site.slug.upper()}-R1',
-            site=site,
-            status=DeviceStatusChoices.STATUS_PLANNED,
-            device_role=router_role
-        )
-        router.save()
 
-        self.log_success(f"Created new router: {router}")
-
-        bridge = router.interfaces.get(name='bridge1')
         addr_private = IPAddress(
             address=data[ 'private_ip' ],
             tenant=data[ 'tenant' ],
         )
         addr_private.save()
+
+        router = Device(
+            device_type=data[ 'router_model' ],
+            name=f'{site.slug.upper()}-R1',
+            site=site,
+            status=DeviceStatusChoices.STATUS_PLANNED,
+            device_role=router_role,
+            primary_ip4=addr_private
+        )
+        router.save()
+
+        self.log_success(f"Created new router: {router}")
+
+
+        bridge = router.interfaces.get(name=data[ 'private_interface' ])
         addr_private.assigned_object = bridge
 
-        wan = router.interfaces.get(name='eth1')
+        wan = router.interfaces.get(name=data[ 'public_interface' ])
         addr_public = IPAddress(
             address=data[ 'public_ip' ],
             tenant=data[ 'tenant' ],
@@ -106,8 +119,6 @@ class NewBranchScript(Script):
         addr_public.save()
         addr_public.assigned_object = wan
 
-        router.primary_ip4.address.ip = addr_private
-        router.save()
 
         # Create access switches
         switch_role = DeviceRole.objects.get(name='Access Switch')
