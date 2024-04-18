@@ -86,7 +86,7 @@ class NewBranchScript(Script):
             device_role=router_role
         )
         router.save()
-        for obj in router.interfaces.all():
+        for obj in router.interfaces.get(name='bridge1'):
             self.log_success(obj)
 
 
