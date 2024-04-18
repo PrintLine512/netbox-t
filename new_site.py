@@ -92,7 +92,11 @@ class NewBranchScript(Script):
 
         bridge = router.interfaces.get(name='bridge1')
 
-        addr = data[ 'private_ip' ]
+        addr = IPAddress(
+            address=data[ 'private_ip' ],
+            tenant=data[ 'tenant' ],
+        )
+
         addr.assigned_object = bridge
         addr.save()
 
