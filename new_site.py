@@ -86,8 +86,9 @@ class NewBranchScript(Script):
             device_role=router_role
         )
         router.save()
-        for obj in router.objects:
+        for obj in router.interfaces.all():
             self.log_success(obj)
+
 
         self.log_success(f"Created new router: {router}")
         try:
