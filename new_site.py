@@ -1,5 +1,6 @@
 from dcim.choices import DeviceStatusChoices, SiteStatusChoices
 from dcim.models import Device, DeviceRole, DeviceType, Manufacturer, Site
+from ipam.models import IPAddress
 from tenancy.models import Tenant, TenantGroup
 from extras.scripts import *
 
@@ -89,10 +90,20 @@ class NewBranchScript(Script):
 
         self.log_success(f"Created new router: {router}")
 
+        bridge = router.interfaces.get(name='bridge1')
+
+        addr = data[ 'private_address' ]
+        addr.assigned_object = bridge
+        addr.save()
+
         try:
-            self.log_success(f"Created new router: {router.interfaces.get(name='bridge1')}")
+            bridge = router.interfaces.get(name='bridge1')
+            addr = data['private_address']
+            addr.assigned_object = bridge
+            addr.save()
+
         except:
-            self.log_success("No bridge(")
+            self.log_success("No bridge. Can`t assign ip address!")
 
 
         # Create access switches
