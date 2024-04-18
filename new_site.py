@@ -98,6 +98,7 @@ class NewBranchScript(Script):
         addr_private.assigned_object = bridge
         addr_private.save()
 
+
         wan = router.interfaces.get(name='eth1')
         addr_public = IPAddress(
             address=data[ 'public_ip' ],
