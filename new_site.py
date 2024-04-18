@@ -86,17 +86,11 @@ class NewBranchScript(Script):
             device_role=router_role
         )
         router.save()
-        for obj in router.interfaces.get(name='bridge1'):
-            self.log_success(obj)
-
 
         self.log_success(f"Created new router: {router}")
+
         try:
-            self.log_success(f"Created new router: {router.model}")
-        except:
-            self.log_success("No bridge")
-        try:
-            self.log_success(f"Created new router: {router.objects.get(name='bridge1')}")
+            self.log_success(f"Created new router: {router.interfaces.get(name='bridge1')}")
         except:
             self.log_success("No bridge(")
 
