@@ -68,7 +68,7 @@ class NewBranchScript(Script):
 
         # Create the new site
         site = Site(
-            name=data[ 'site_name' ],
+            name=data['site_name'],
             slug=data[ 'slug' ],
             tenant=data[ 'tenant' ],
             physical_address=data[ 'physical_address' ],
@@ -99,16 +99,8 @@ class NewBranchScript(Script):
 
         addr.assigned_object = bridge
         addr.save()
-
-        try:
-            bridge = router.interfaces.get(name='bridge1')
-            addr = data['private_address']
-            addr.assigned_object = bridge
-            addr.save()
-
-        except:
-            self.log_success("No bridge. Can`t assign ip address!")
-
+        router.primary_ip4.address.ip = addr
+        router.save()
 
         # Create access switches
         switch_role = DeviceRole.objects.get(name='Access Switch')
