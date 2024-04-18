@@ -91,15 +91,22 @@ class NewBranchScript(Script):
         self.log_success(f"Created new router: {router}")
 
         bridge = router.interfaces.get(name='bridge1')
-
-        addr = IPAddress(
+        addr_private = IPAddress(
             address=data[ 'private_ip' ],
             tenant=data[ 'tenant' ],
         )
+        addr_private.assigned_object = bridge
+        addr_private.save()
 
-        addr.assigned_object = bridge
-        addr.save()
-        router.primary_ip4.address.ip = addr
+        wan = router.interfaces.get(name='eth1')
+        addr_public = IPAddress(
+            address=data[ 'public_ip' ],
+            tenant=data[ 'tenant' ],
+        )
+        addr_public.assigned_object = wan
+        addr_public.save()
+
+        router.primary_ip4.address.ip = addr_private
         router.save()
 
         # Create access switches
