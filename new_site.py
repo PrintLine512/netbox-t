@@ -95,17 +95,16 @@ class NewBranchScript(Script):
             address=data[ 'private_ip' ],
             tenant=data[ 'tenant' ],
         )
-        addr_private.assigned_object = bridge
         addr_private.save()
-
+        addr_private.assigned_object = bridge
 
         wan = router.interfaces.get(name='eth1')
         addr_public = IPAddress(
             address=data[ 'public_ip' ],
             tenant=data[ 'tenant' ],
         )
-        addr_public.assigned_object = wan
         addr_public.save()
+        addr_public.assigned_object = wan
 
         router.primary_ip4.address.ip = addr_private
         router.save()
